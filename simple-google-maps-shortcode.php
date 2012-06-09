@@ -29,6 +29,7 @@ function put_google_map($atts, $content=null){
     $corf = ($align == 'center') ? 'margin:0 auto;' : 'float:'.$align.';';
 
     $return = <<<EOF
+<style type="text/css">#map_canvas img { max-width: none; }#map_canvas {color:black;}</style>
 <script type="text/javascript" 
 src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript">
