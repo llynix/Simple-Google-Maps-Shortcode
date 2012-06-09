@@ -1,0 +1,6 @@
+#map_canvas img {
+  max-width: none;
+  box-shadow:none;
+  background:none;
+}
+#map_canvas {color:black;}
