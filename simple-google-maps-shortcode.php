@@ -13,7 +13,28 @@ Author URI: http://llynix.com
 
 Helpful Link: http://itouchmap.com/latlong.html 
 */
+function sgms_script() {
+  wp_register_script( 'gmaps', 'http://maps.googleapis.com/maps/api/js?sensor=false');
+  wp_enqueue_script('gmaps');
+  wp_enqueue_script('sgms-script', plugins_url('script.js', __FILE__),array(),'20120609-1',false);
+}
+
+add_action('wp_enqueue_scripts','sgms_script');
+
+function sgms_style() {
+  // Register the style like this for a plugin:  
+  wp_register_style( 'sgms-style', plugins_url('/style.css', __FILE__ ), array(), '20120609', 'all' );  
+      
+  // For either a plugin or a theme, you can then enqueue the style:  
+  wp_enqueue_style( 'sgms-style' );  
+}  
+
+add_action( 'wp_enqueue_scripts', 'sgms_style' );
+
 function put_google_map($atts, $content=null){  
+    global $add_my_script;
+    $add_my_script = true;
+
     extract(shortcode_atts( array(
         'width' => '400px',
         'height' => '350px',
@@ -29,41 +50,11 @@ function put_google_map($atts, $content=null){
     $corf = ($align == 'center') ? 'margin:0 auto;' : 'float:'.$align.';';
 
     $return = <<<EOF
-<style type="text/css">#map_canvas img { max-width: none; box-shadow:none;background:none;}#map_canvas {color:black;}</style>
-<script type="text/javascript" 
-src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript">
-  function initialize() {
-    var myLatlng = new google.maps.LatLng($mlat,$mlon);
-    var centerLatlng = new google.maps.LatLng($clat,$clon);
-    var myOptions = {
-      zoom: $zoom,
-      center: centerLatlng,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    }
-
-    var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-
-    var contentString = '$content';
-        
-    var infowindow = new google.maps.InfoWindow({
-        disableAutoPan: true,
-        content: contentString
-    });
-
-    var marker = new google.maps.Marker({
-        position: myLatlng,
-        map: map,
-        title: '$mtitle'
-    });
-    infowindow.open(map,marker);
-  }
-</script>
 <div style="width:$width;height:$height;$corf" id="map_canvas"></div>
-<script type="text/javascript">initialize();</script>
+<script 
+type="text/javascript">initialize($mlat,$mlon,$clat,$clon,$zoom,'$content','$mtitle');</script>
 EOF;
 
     return $return;
 }  
 add_shortcode('put_google_map', 'put_google_map'); 
-
